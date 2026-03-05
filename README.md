@@ -18,6 +18,8 @@ uv add pydantic-ai-tool-budget
 pip install pydantic-ai-tool-budget
 ```
 
+Requires `pydantic-ai-slim>=0.100.0`.
+
 ## Quick Start
 
 ```python
@@ -25,24 +27,23 @@ from pydantic_ai import Agent
 from pydantic_ai.toolsets import FunctionToolset
 from pydantic_ai_tool_budget import ToolBudgetToolset
 
-toolset = FunctionToolset()
 
-@toolset.tool_plain
 def search(query: str) -> str:
     """Search the web."""
     return f"Results for {query}"
 
-@toolset.tool_plain
+
 def lookup(city: str) -> str:
     """Look up city info."""
     return f"Info about {city}"
+
 
 # Wrap with per-tool budget tracking
 agent = Agent(
     'openai:gpt-4o',
     toolsets=[
         ToolBudgetToolset(
-            wrapped=toolset,
+            wrapped=FunctionToolset([search, lookup]),
             limits={'search': 5, 'lookup': 3},
         ),
     ],
@@ -98,9 +99,12 @@ ToolBudgetToolset(
 
 ## How It Works
 
-`ToolBudgetToolset` extends Pydantic AI's [`WrapperToolset`](https://ai.pydantic.dev/toolsets/#wrapping-a-toolset). After each successful tool call, it wraps the result in a `ToolReturn` with a `.content` field containing the budget reminder. The framework converts this to a `UserPromptPart` placed after the tool result in the model request — exactly where the model reads it before deciding what to do next.
+`ToolBudgetToolset` extends Pydantic AI's [`WrapperToolset`](https://ai.pydantic.dev/toolsets/#wrapping-a-toolset). After each successful tool call, it wraps the result in a [`ToolReturn`](https://ai.pydantic.dev/api/tools/#pydantic_ai.tools.ToolReturn) with a `.content` field containing the budget reminder. The framework converts this to a `UserPromptPart` placed after the tool result in the model request — exactly where the model reads it before deciding what to do next.
 
-Counts reset automatically between agent runs.
+This means:
+- Reminders sit in the **conversation body**, not the system prompt — no prompt cache busting
+- Each tool gets its **own** budget tracking — the model sees per-tool counts
+- Counts **reset automatically** between `agent.run()` calls
 
 ## API
 
