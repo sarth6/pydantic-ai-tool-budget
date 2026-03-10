@@ -50,11 +50,11 @@ interactions:
       alt-svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
       content-length:
-      - '780'
+      - '781'
       content-type:
       - application/json; charset=UTF-8
       server-timing:
-      - gfet4t7; dur=583
+      - gfet4t7; dur=638
       transfer-encoding:
       - chunked
       vary:
@@ -63,7 +63,7 @@ interactions:
       - Referer
     parsed_body:
       candidates:
-      - avgLogprobs: -0.0001596821704879403
+      - avgLogprobs: -0.00020962683483958245
         content:
           parts:
           - functionCall:
@@ -73,7 +73,7 @@ interactions:
           role: model
         finishReason: STOP
       modelVersion: gemini-2.0-flash
-      responseId: uJWwacejIaKhjrEPwcTAiQI
+      responseId: jZawaYb0EIqa-8YPyr7IuA8
       usageMetadata:
         candidatesTokenCount: 5
         candidatesTokensDetails:
@@ -111,13 +111,13 @@ interactions:
         - functionCall:
             args:
               country: France
-            id: pyd_ai_9b95e732d1bc4bd39724b567818369f5
+            id: pyd_ai_c03a721dd1d044db81a01ee578a8204a
             name: get_capital
           thoughtSignature: c2tpcF90aG91Z2h0X3NpZ25hdHVyZV92YWxpZGF0b3I=
         role: model
       - parts:
         - functionResponse:
-            id: pyd_ai_9b95e732d1bc4bd39724b567818369f5
+            id: pyd_ai_c03a721dd1d044db81a01ee578a8204a
             name: get_capital
             response:
               return_value: Paris
@@ -160,7 +160,7 @@ interactions:
       content-type:
       - application/json; charset=UTF-8
       server-timing:
-      - gfet4t7; dur=476
+      - gfet4t7; dur=518
       transfer-encoding:
       - chunked
       vary:
@@ -169,7 +169,7 @@ interactions:
       - Referer
     parsed_body:
       candidates:
-      - avgLogprobs: -0.021059207618236542
+      - avgLogprobs: -0.006539008890589078
         content:
           parts:
           - text: |2+
@@ -182,7 +182,7 @@ interactions:
           role: model
         finishReason: STOP
       modelVersion: gemini-2.0-flash
-      responseId: uZWwad7bDeD5jrEPguyAmAE
+      responseId: jZawafHxOqjn-8YPqtDLgA0
       usageMetadata:
         candidatesTokenCount: 6
         candidatesTokensDetails:
@@ -220,13 +220,13 @@ interactions:
         - functionCall:
             args:
               country: France
-            id: pyd_ai_9b95e732d1bc4bd39724b567818369f5
+            id: pyd_ai_c03a721dd1d044db81a01ee578a8204a
             name: get_capital
           thoughtSignature: c2tpcF90aG91Z2h0X3NpZ25hdHVyZV92YWxpZGF0b3I=
         role: model
       - parts:
         - functionResponse:
-            id: pyd_ai_9b95e732d1bc4bd39724b567818369f5
+            id: pyd_ai_c03a721dd1d044db81a01ee578a8204a
             name: get_capital
             response:
               return_value: Paris
@@ -241,13 +241,13 @@ interactions:
         - functionCall:
             args:
               city: Paris
-            id: pyd_ai_2878ae00673146c085aa9b1a57a25495
+            id: pyd_ai_8124a7c2f6344624854dff27d87af076
             name: get_population
           thoughtSignature: c2tpcF90aG91Z2h0X3NpZ25hdHVyZV92YWxpZGF0b3I=
         role: model
       - parts:
         - functionResponse:
-            id: pyd_ai_2878ae00673146c085aa9b1a57a25495
+            id: pyd_ai_8124a7c2f6344624854dff27d87af076
             name: get_population
             response:
               return_value: 2.1 million
@@ -290,7 +290,7 @@ interactions:
       content-type:
       - application/json; charset=UTF-8
       server-timing:
-      - gfet4t7; dur=563
+      - gfet4t7; dur=512
       transfer-encoding:
       - chunked
       vary:
@@ -299,7 +299,7 @@ interactions:
       - Referer
     parsed_body:
       candidates:
-      - avgLogprobs: -0.02660808751457616
+      - avgLogprobs: -0.031993047187202854
         content:
           parts:
           - text: |2
@@ -308,7 +308,7 @@ interactions:
           role: model
         finishReason: STOP
       modelVersion: gemini-2.0-flash
-      responseId: uZWwaaXbL83n-8YPrI31uAg
+      responseId: jpawabq6IoTY-8YPwLuakAo
       usageMetadata:
         candidatesTokenCount: 19
         candidatesTokensDetails:
