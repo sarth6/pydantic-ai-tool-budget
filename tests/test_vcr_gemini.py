@@ -11,9 +11,8 @@ from pydantic_ai import Agent
 from pydantic_ai.messages import ModelMessage, ModelRequest, UserPromptPart
 from pydantic_ai.models.google import GoogleModel
 from pydantic_ai.providers.google import GoogleProvider
-from pydantic_ai.toolsets import FunctionToolset
 
-from pydantic_ai_tool_budget import ToolBudgetToolset
+from pydantic_ai_tool_budget import budgeted
 
 pytestmark = [
     pytest.mark.anyio,
@@ -69,21 +68,17 @@ def _budget_parts(messages: list[ModelMessage]) -> list[str]:
 @pytest.mark.vcr()
 async def test_gemini_budget_reminders(allow_model_requests: None, gemini_api_key: str) -> None:
     """Basic integration: budget reminders appear in Gemini conversation."""
-    toolset: FunctionToolset[None] = FunctionToolset([get_capital])
-    budget_toolset: ToolBudgetToolset[None] = ToolBudgetToolset(
-        wrapped=toolset,
-        limits={"get_capital": 3},
-    )
-
     model = GoogleModel("gemini-2.0-flash", provider=GoogleProvider(api_key=gemini_api_key))
-    agent: Agent[None, str] = Agent(model, toolsets=[budget_toolset])
+    agent: Agent[None, str] = Agent(
+        model,
+        tools=[budgeted(get_capital, limit=3)],
+    )
 
     result = await agent.run("What is the capital of France? Use the get_capital tool.")
 
     messages = result.all_messages()
     reminders = _budget_parts(messages)
 
-    # At least one budget reminder should be injected
     assert len(reminders) >= 1
     assert "get_capital" in reminders[0]
     assert "1/3" in reminders[0]
@@ -92,23 +87,23 @@ async def test_gemini_budget_reminders(allow_model_requests: None, gemini_api_ke
 @pytest.mark.vcr()
 async def test_gemini_multiple_tools(allow_model_requests: None, gemini_api_key: str) -> None:
     """Multiple tools each get their own budget reminder."""
-    toolset: FunctionToolset[None] = FunctionToolset([get_capital, get_population])
-    budget_toolset: ToolBudgetToolset[None] = ToolBudgetToolset(
-        wrapped=toolset,
-        limits={"get_capital": 5, "get_population": 3},
+    model = GoogleModel("gemini-2.0-flash", provider=GoogleProvider(api_key=gemini_api_key))
+    agent: Agent[None, str] = Agent(
+        model,
+        tools=[
+            budgeted(get_capital, limit=5),
+            budgeted(get_population, limit=3),
+        ],
     )
 
-    model = GoogleModel("gemini-2.0-flash", provider=GoogleProvider(api_key=gemini_api_key))
-    agent: Agent[None, str] = Agent(model, toolsets=[budget_toolset])
-
     result = await agent.run(
-        "What is the capital of France, and what is its population? Use the get_capital and get_population tools."
+        "What is the capital of France, and what is its population? "
+        "Use the get_capital and get_population tools."
     )
 
     messages = result.all_messages()
     reminders = _budget_parts(messages)
 
-    # Should have reminders for both tools
     tool_names_in_reminders = [r.split(":")[0] for r in reminders]
     assert "get_capital" in tool_names_in_reminders
     assert "get_population" in tool_names_in_reminders
@@ -117,15 +112,11 @@ async def test_gemini_multiple_tools(allow_model_requests: None, gemini_api_key:
 @pytest.mark.vcr()
 async def test_gemini_threshold_filtering(allow_model_requests: None, gemini_api_key: str) -> None:
     """Threshold suppresses reminders when budget is comfortable."""
-    toolset: FunctionToolset[None] = FunctionToolset([get_capital])
-    budget_toolset: ToolBudgetToolset[None] = ToolBudgetToolset(
-        wrapped=toolset,
-        limits={"get_capital": 10},
-        threshold=2,  # only remind when remaining <= 2
-    )
-
     model = GoogleModel("gemini-2.0-flash", provider=GoogleProvider(api_key=gemini_api_key))
-    agent: Agent[None, str] = Agent(model, toolsets=[budget_toolset])
+    agent: Agent[None, str] = Agent(
+        model,
+        tools=[budgeted(get_capital, limit=10, threshold=2)],
+    )
 
     result = await agent.run("What is the capital of France? Use the get_capital tool.")
 
@@ -146,15 +137,11 @@ async def test_gemini_custom_formatter(allow_model_requests: None, gemini_api_ke
             return f"WARNING: Only {remaining} {name} calls left!"
         return f"{name} budget OK ({remaining}/{limit} remaining)"
 
-    toolset: FunctionToolset[None] = FunctionToolset([get_capital])
-    budget_toolset: ToolBudgetToolset[None] = ToolBudgetToolset(
-        wrapped=toolset,
-        limits={"get_capital": 5},
-        formatter=urgent_formatter,
-    )
-
     model = GoogleModel("gemini-2.0-flash", provider=GoogleProvider(api_key=gemini_api_key))
-    agent: Agent[None, str] = Agent(model, toolsets=[budget_toolset])
+    agent: Agent[None, str] = Agent(
+        model,
+        tools=[budgeted(get_capital, limit=5, formatter=urgent_formatter)],
+    )
 
     result = await agent.run("What is the capital of France? Use the get_capital tool.")
 

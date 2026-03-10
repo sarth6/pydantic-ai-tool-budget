@@ -50,11 +50,11 @@ interactions:
       alt-svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
       content-length:
-      - '781'
+      - '780'
       content-type:
       - application/json; charset=UTF-8
       server-timing:
-      - gfet4t7; dur=594
+      - gfet4t7; dur=583
       transfer-encoding:
       - chunked
       vary:
@@ -63,7 +63,7 @@ interactions:
       - Referer
     parsed_body:
       candidates:
-      - avgLogprobs: -0.00020962683483958245
+      - avgLogprobs: -0.0001596821704879403
         content:
           parts:
           - functionCall:
@@ -73,7 +73,7 @@ interactions:
           role: model
         finishReason: STOP
       modelVersion: gemini-2.0-flash
-      responseId: i8-oabC2KdLy-8YP0sf78Ag
+      responseId: uJWwacejIaKhjrEPwcTAiQI
       usageMetadata:
         candidatesTokenCount: 5
         candidatesTokensDetails:
@@ -111,13 +111,13 @@ interactions:
         - functionCall:
             args:
               country: France
-            id: pyd_ai_b2d7588858c8445b985fa94b55835c56
+            id: pyd_ai_9b95e732d1bc4bd39724b567818369f5
             name: get_capital
           thoughtSignature: c2tpcF90aG91Z2h0X3NpZ25hdHVyZV92YWxpZGF0b3I=
         role: model
       - parts:
         - functionResponse:
-            id: pyd_ai_b2d7588858c8445b985fa94b55835c56
+            id: pyd_ai_9b95e732d1bc4bd39724b567818369f5
             name: get_capital
             response:
               return_value: Paris
@@ -160,7 +160,7 @@ interactions:
       content-type:
       - application/json; charset=UTF-8
       server-timing:
-      - gfet4t7; dur=630
+      - gfet4t7; dur=476
       transfer-encoding:
       - chunked
       vary:
@@ -182,7 +182,7 @@ interactions:
           role: model
         finishReason: STOP
       modelVersion: gemini-2.0-flash
-      responseId: jM-oad2AGsLy-8YPuNWF2Ag
+      responseId: uZWwad7bDeD5jrEPguyAmAE
       usageMetadata:
         candidatesTokenCount: 6
         candidatesTokensDetails:
@@ -220,13 +220,13 @@ interactions:
         - functionCall:
             args:
               country: France
-            id: pyd_ai_b2d7588858c8445b985fa94b55835c56
+            id: pyd_ai_9b95e732d1bc4bd39724b567818369f5
             name: get_capital
           thoughtSignature: c2tpcF90aG91Z2h0X3NpZ25hdHVyZV92YWxpZGF0b3I=
         role: model
       - parts:
         - functionResponse:
-            id: pyd_ai_b2d7588858c8445b985fa94b55835c56
+            id: pyd_ai_9b95e732d1bc4bd39724b567818369f5
             name: get_capital
             response:
               return_value: Paris
@@ -241,13 +241,13 @@ interactions:
         - functionCall:
             args:
               city: Paris
-            id: pyd_ai_32613077206c47ccb3cd768cdda4a965
+            id: pyd_ai_2878ae00673146c085aa9b1a57a25495
             name: get_population
           thoughtSignature: c2tpcF90aG91Z2h0X3NpZ25hdHVyZV92YWxpZGF0b3I=
         role: model
       - parts:
         - functionResponse:
-            id: pyd_ai_32613077206c47ccb3cd768cdda4a965
+            id: pyd_ai_2878ae00673146c085aa9b1a57a25495
             name: get_population
             response:
               return_value: 2.1 million
@@ -290,7 +290,7 @@ interactions:
       content-type:
       - application/json; charset=UTF-8
       server-timing:
-      - gfet4t7; dur=638
+      - gfet4t7; dur=563
       transfer-encoding:
       - chunked
       vary:
@@ -308,7 +308,7 @@ interactions:
           role: model
         finishReason: STOP
       modelVersion: gemini-2.0-flash
-      responseId: jc-oadaCCafv-8YP8K7m4Qg
+      responseId: uZWwaaXbL83n-8YPrI31uAg
       usageMetadata:
         candidatesTokenCount: 19
         candidatesTokensDetails:

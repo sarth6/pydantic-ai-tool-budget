@@ -24,8 +24,7 @@ Requires `pydantic-ai-slim>=0.100.0`.
 
 ```python
 from pydantic_ai import Agent
-from pydantic_ai.toolsets import FunctionToolset
-from pydantic_ai_tool_budget import ToolBudgetToolset
+from pydantic_ai_tool_budget import budgeted
 
 
 def search(query: str) -> str:
@@ -38,14 +37,12 @@ def lookup(city: str) -> str:
     return f"Info about {city}"
 
 
-# Wrap with per-tool budget tracking
 agent = Agent(
     'openai:gpt-4o',
-    toolsets=[
-        ToolBudgetToolset(
-            wrapped=FunctionToolset([search, lookup]),
-            limits={'search': 5, 'lookup': 3},
-        ),
+    tools=[
+        budgeted(search, limit=5),
+        budgeted(lookup, limit=3),
+        # undecorated tools work normally — no budget tracking
     ],
 )
 ```
@@ -64,31 +61,18 @@ search: 5/5 calls used, 0 remaining. This tool's budget is exhausted.
 
 ## Options
 
-### Default limit for all tools
-
-```python
-ToolBudgetToolset(
-    wrapped=toolset,
-    default_limit=10,  # applies to any tool not in `limits`
-)
-```
-
 ### Threshold — only remind when budget is tight
 
 ```python
-ToolBudgetToolset(
-    wrapped=toolset,
-    limits={'search': 10},
-    threshold=3,  # only remind when remaining <= 3
-)
+budgeted(search, limit=10, threshold=3)  # only remind when remaining <= 3
 ```
 
 ### Custom formatter
 
 ```python
-ToolBudgetToolset(
-    wrapped=toolset,
-    default_limit=5,
+budgeted(
+    search,
+    limit=5,
     formatter=lambda name, used, limit: (
         f"Only {limit - used} calls left for {name}. Prioritize."
         if limit - used <= 3
@@ -99,22 +83,22 @@ ToolBudgetToolset(
 
 ## How It Works
 
-`ToolBudgetToolset` extends Pydantic AI's [`WrapperToolset`](https://ai.pydantic.dev/toolsets/#wrapping-a-toolset). After each successful tool call, it wraps the result in a [`ToolReturn`](https://ai.pydantic.dev/api/tools/#pydantic_ai.tools.ToolReturn) with a `.content` field containing the budget reminder. The framework converts this to a `UserPromptPart` placed after the tool result in the model request — exactly where the model reads it before deciding what to do next.
+`budgeted()` wraps your tool function using `functools.wraps`, preserving its name, docstring, and parameter schema. After each call, it returns a [`ToolReturn`](https://ai.pydantic.dev/api/tools/#pydantic_ai.tools.ToolReturn) with a `.content` field containing the budget reminder. The framework converts this to a `UserPromptPart` placed after the tool result in the model request — exactly where the model reads it before deciding what to do next.
 
 This means:
 - Reminders sit in the **conversation body**, not the system prompt — no prompt cache busting
 - Each tool gets its **own** budget tracking — the model sees per-tool counts
-- Counts **reset automatically** between `agent.run()` calls
+- **No string mappings** — you pass the function directly, so typos are `NameError`s
+- Works with sync and async tools, with or without `RunContext`
 
 ## API
 
-### `ToolBudgetToolset`
+### `budgeted(func, *, limit, threshold=None, formatter=None)`
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `wrapped` | `AbstractToolset` | *required* | The toolset to wrap |
-| `limits` | `dict[str, int]` | `{}` | Per-tool call limits |
-| `default_limit` | `int \| None` | `None` | Default limit for unlisted tools |
+| `func` | `Callable` | *required* | The tool function to wrap |
+| `limit` | `int` | *required* | Maximum calls before budget is exhausted |
 | `threshold` | `int \| None` | `None` | Only remind when remaining <= threshold |
 | `formatter` | `(name, used, limit) -> str \| None` | `None` | Custom reminder formatter |
 

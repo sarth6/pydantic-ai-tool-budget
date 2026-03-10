@@ -44,7 +44,7 @@ interactions:
       content-type:
       - application/json; charset=UTF-8
       server-timing:
-      - gfet4t7; dur=705
+      - gfet4t7; dur=553
       transfer-encoding:
       - chunked
       vary:
@@ -63,7 +63,7 @@ interactions:
           role: model
         finishReason: STOP
       modelVersion: gemini-2.0-flash
-      responseId: is-oaYitFLrV-8YPhK7e-Qg
+      responseId: t5WwafTxDaae-8YP6eTB6A8
       usageMetadata:
         candidatesTokenCount: 5
         candidatesTokensDetails:
@@ -101,13 +101,13 @@ interactions:
         - functionCall:
             args:
               country: France
-            id: pyd_ai_c094c8a3b2944dd9842a84d781972442
+            id: pyd_ai_b3f0cda2597b4bf688df8ede006fe251
             name: get_capital
           thoughtSignature: c2tpcF90aG91Z2h0X3NpZ25hdHVyZV92YWxpZGF0b3I=
         role: model
       - parts:
         - functionResponse:
-            id: pyd_ai_c094c8a3b2944dd9842a84d781972442
+            id: pyd_ai_b3f0cda2597b4bf688df8ede006fe251
             name: get_capital
             response:
               return_value: Paris
@@ -140,7 +140,7 @@ interactions:
       content-type:
       - application/json; charset=UTF-8
       server-timing:
-      - gfet4t7; dur=522
+      - gfet4t7; dur=588
       transfer-encoding:
       - chunked
       vary:
@@ -159,7 +159,7 @@ interactions:
           role: model
         finishReason: STOP
       modelVersion: gemini-2.0-flash
-      responseId: i8-oafKRA6H7-8YPsM6ewQQ
+      responseId: t5WwabvhNLKysOIP7s3TwA8
       usageMetadata:
         candidatesTokenCount: 9
         candidatesTokensDetails:
