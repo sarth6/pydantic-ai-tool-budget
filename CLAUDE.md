@@ -26,7 +26,7 @@ The publish workflow (`.github/workflows/publish.yml`) handles building and uplo
 
 - `src/pydantic_ai_tool_budget/` — package source
   - `_budgeted.py` — `budgeted()` decorator (primary API)
-  - `_toolset.py` — `ToolBudgetToolset` class (alternative API)
+  - `_budget.py` — `ToolBudget` class (shared budget pools)
   - `__init__.py` — public exports
 - `tests/` — pytest test suite with VCR cassettes for Gemini integration tests
 - `.github/workflows/ci.yml` — CI: lint, typecheck, test across Python 3.10–3.13

@@ -38,6 +38,7 @@ dev = [
     "pyright>=1.1",
     "ruff>=0.8",
     "pydantic-ai-slim[google]>=0.100.0",
+    "pytest-cov>=7.0.0",
 ]
 
 [tool.pytest.ini_options]

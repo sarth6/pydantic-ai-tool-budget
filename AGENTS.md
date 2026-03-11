@@ -12,7 +12,3 @@ Sync/async detection: `is_async_callable` checks the actual function, NOT `__wra
 - VCR tests require the `allow_model_requests` fixture even in replay mode
 - `GoogleModel` takes `provider=GoogleProvider(api_key=key)`, not `api_key=key` directly
 - To re-record cassettes: `GEMINI_API_KEY=... uv run pytest tests/test_vcr_gemini.py --record-mode=all`
-
-## Legacy API
-
-`ToolBudgetToolset` (WrapperToolset approach) still exists for backwards compat and bulk configuration via `default_limit`. Prefer `budgeted()` for new code.
