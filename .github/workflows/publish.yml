@@ -20,8 +20,27 @@ jobs:
         with:
           version: "latest"
 
+      - name: Verify tag matches package version
+        run: |
+          expected_version="${GITHUB_REF_NAME#v}"
+          actual_version="$(python3 - <<'PY'
+          import tomllib
+          from pathlib import Path
+          
+          pyproject = tomllib.loads(Path("pyproject.toml").read_text())
+          print(pyproject["project"]["version"])
+          PY
+          )"
+          if [ "$actual_version" != "$expected_version" ]; then
+            echo "Tag version ($expected_version) does not match pyproject.toml version ($actual_version)."
+            exit 1
+          fi
+
       - name: Build
         run: uv build
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          # Reruns should not fail if the exact release artifacts are already on PyPI.
+          skip-existing: true

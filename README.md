@@ -189,3 +189,57 @@ A shared call-count pool. Pass to `budgeted(..., budget=pool)` so multiple tools
 ## License
 
 MIT
+
+## Releasing
+
+### GitHub Actions: easiest path
+
+Run the `Release` workflow from the Actions tab.
+
+Or trigger it from the CLI:
+
+```bash
+gh workflow run Release --ref main -f bump=patch
+```
+
+- Choose `patch`, `minor`, `major`, or `custom`
+- If you choose `custom`, provide an explicit `X.Y.Z` version
+
+For an explicit version:
+
+```bash
+gh workflow run Release --ref main -f bump=custom -f version=0.2.0
+```
+
+The workflow will:
+- bump `pyproject.toml`
+- run lint, type checks, and tests
+- commit the version bump to `main`
+- create and push the git tag
+- build and publish to PyPI
+- create the GitHub release with generated notes
+
+### Local CLI
+
+Preview the next version:
+
+```bash
+uv run python scripts/release.py patch
+```
+
+Write the next patch version into `pyproject.toml`:
+
+```bash
+uv run python scripts/release.py patch --write
+```
+
+Set an exact version:
+
+```bash
+uv run python scripts/release.py custom --version 0.2.0 --write
+```
+
+### Safety rails
+
+- The publish workflow checks that the git tag matches `pyproject.toml`
+- PyPI uploads use `skip-existing: true`, so reruns do not fail just because a version is already published

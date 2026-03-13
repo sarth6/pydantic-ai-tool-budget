@@ -1,0 +1,116 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: "Version bump type"
+        required: true
+        default: patch
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+          - custom
+      version:
+        description: "Explicit version when bump=custom"
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  id-token: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    environment: pypi
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - name: Ensure release runs from main
+        run: |
+          if [ "${GITHUB_REF_NAME}" != "main" ]; then
+            echo "Run this workflow from the main branch."
+            exit 1
+          fi
+
+      - name: Prepare release version
+        id: version
+        env:
+          INPUT_BUMP: ${{ inputs.bump }}
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          if [ "$INPUT_BUMP" = "custom" ] && [ -z "$INPUT_VERSION" ]; then
+            echo "Input 'version' is required when bump=custom."
+            exit 1
+          fi
+
+          if [ -n "$INPUT_VERSION" ]; then
+            next_version="$(uv run python scripts/release.py "$INPUT_BUMP" --version "$INPUT_VERSION" --write)"
+          else
+            next_version="$(uv run python scripts/release.py "$INPUT_BUMP" --write)"
+          fi
+
+          if git rev-parse "v$next_version" >/dev/null 2>&1; then
+            echo "Tag v$next_version already exists."
+            exit 1
+          fi
+
+          echo "version=$next_version" >> "$GITHUB_OUTPUT"
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Validate release
+        run: |
+          uv run ruff check
+          uv run ruff format --check
+          uv run pyright
+          uv run pytest -q
+
+      - name: Commit version bump
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pyproject.toml
+          git commit -m "release: v${{ steps.version.outputs.version }}"
+          git tag "v${{ steps.version.outputs.version }}"
+
+      - name: Push commit and tag
+        run: |
+          git push origin HEAD:main
+          git push origin "v${{ steps.version.outputs.version }}"
+
+      - name: Check out release tag
+        run: git checkout "v${{ steps.version.outputs.version }}"
+
+      - name: Build
+        run: uv build
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          skip-existing: true
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create \
+            "v${{ steps.version.outputs.version }}" \
+            --title "v${{ steps.version.outputs.version }}" \
+            --generate-notes \
+            --verify-tag
