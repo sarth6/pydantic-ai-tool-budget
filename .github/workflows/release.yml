@@ -100,10 +100,31 @@ jobs:
       - name: Build
         run: uv build
 
-      - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          skip-existing: true
+      - name: Dispatch publish workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run "Publish to PyPI" --ref main -f ref="v${{ steps.version.outputs.version }}"
+
+      - name: Wait for publish workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for attempt in {1..20}; do
+            run_id="$(gh run list \
+              --workflow "Publish to PyPI" \
+              --limit 20 \
+              --json databaseId,event,headBranch \
+              --jq 'map(select(.event == "workflow_dispatch" and .headBranch == "main")) | sort_by(.databaseId) | last | .databaseId')"
+            if [ -n "$run_id" ] && [ "$run_id" != "null" ]; then
+              gh run watch "$run_id" --exit-status
+              exit 0
+            fi
+            sleep 3
+          done
+
+          echo "Could not find the dispatched Publish to PyPI workflow run."
+          exit 1
 
       - name: Create GitHub release
         env:
